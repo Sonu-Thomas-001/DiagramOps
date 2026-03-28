@@ -1,0 +1,5 @@
+{
+  "name": "DiagramOps",
+  "description": "A web app that generates architecture diagrams from text input.",
+  "requestFramePermissions": []
+}
