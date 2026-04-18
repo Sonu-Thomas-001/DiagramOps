@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Wand2, Loader2, UploadCloud, X, TerminalSquare, ArrowRight, Zap } from 'lucide-react';
+import { ArrowRight, Upload, X, HelpCircle } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 interface HeroInputProps {
@@ -30,7 +30,7 @@ export function HeroInput({
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${Math.max(140, textareaRef.current.scrollHeight)}px`;
+      textareaRef.current.style.height = `${Math.max(120, textareaRef.current.scrollHeight)}px`;
     }
   }, [prompt]);
 
@@ -63,44 +63,35 @@ export function HeroInput({
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto flex flex-col items-center pt-12 pb-24 px-6 relative z-10">
+    <div className="w-full max-w-3xl mx-auto flex flex-col pt-24 pb-12 px-6">
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-14">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-xs font-semibold tracking-wide uppercase mb-6 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
-          <TerminalSquare className="w-3.5 h-3.5" />
-          <span>DiagramOps Engine</span>
-        </div>
-        <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tighter mb-4 leading-tight">
-          {mode === 'text' ? 'Design Systems with ' : 'Redesign Architecture with '}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500">
-            Precision
-          </span>
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-10 text-center">
+        <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-foreground mb-3">
+          {mode === 'text' ? 'Design Systems with Precision' : 'Redesign Architecture'}
         </h1>
-        <p className="text-lg text-muted-foreground/80 max-w-2xl mx-auto">
+        <p className="text-[15px] text-muted-foreground max-w-lg mx-auto">
           {mode === 'text' 
-            ? 'Describe your system architecture in plain text. We translate it into presentation-ready vector diagrams.'
-            : 'Upload messy whiteboard sketches or outdated diagrams. We reconstruct them into pristine modern designs.'}
+            ? 'Describe your system architecture in plain text. We translate it into crisp, presentation-ready vector diagrams.'
+            : 'Upload whiteboard sketches or complex diagrams. We restructure them into clean, modern designs.'}
         </p>
       </motion.div>
 
       {/* Main Input Area */}
       <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
+        initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.1, type: "spring", stiffness: 300, damping: 30 }}
+        transition={{ delay: 0.05 }}
         className={cn(
-          "w-full bg-[#0c0c11]/80 backdrop-blur-3xl rounded-[32px] border relative group transition-all duration-500 p-2",
-          isFocused ? "border-blue-500/50 shadow-[0_0_40px_rgba(59,130,246,0.15)] ring-1 ring-blue-500/20" : "border-white/10 hover:border-white/20 shadow-2xl"
+          "w-full bg-card rounded-xl border border-border transition-all duration-200",
+          isFocused ? "shadow-[0_0_0_1px_rgba(255,255,255,0.1)] border-neutral-700" : "shadow-sm hover:border-neutral-800"
         )}
       >
-        <div className="absolute inset-0 rounded-[32px] bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
-
         {mode === 'text' ? (
-          <div className="flex flex-col relative z-10 glass rounded-[24px] overflow-hidden">
+          <div className="flex flex-col relative w-full">
             <textarea
               ref={textareaRef}
-              className="w-full p-8 text-foreground bg-transparent font-sans text-xl focus:outline-none resize-none placeholder:text-muted-foreground/40 min-h-[140px]"
-              placeholder="Describe your system... (e.g., User → API Gateway → Microservices → Database)"
+              className="w-full p-5 text-foreground bg-transparent font-sans text-base focus:outline-none resize-none placeholder:text-muted-foreground min-h-[120px]"
+              placeholder="e.g., User → API Gateway → Microservices → Database..."
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               onFocus={() => setIsFocused(true)}
@@ -108,87 +99,75 @@ export function HeroInput({
               onKeyDown={handleKeyDown}
             />
             
-            <AnimatePresence>
-              {prompt.length === 0 && !isFocused && (
-                <motion.div 
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="absolute bottom-8 left-8 pointer-events-none text-base text-muted-foreground/30 tracking-wide"
-                >
-                  <span className="font-semibold text-blue-400/40 mr-2">Try:</span> 
-                  scalable e-commerce system
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <div className="px-6 py-4 flex flex-wrap gap-2 items-center border-t border-white/5 bg-black/20">
-              <span className="text-xs font-semibold text-muted-foreground/60 uppercase tracking-widest mr-2 flex items-center gap-1">
-                <Zap className="w-3 h-3 text-yellow-500" /> Suggestions
-              </span>
-              {SUGGESTIONS.map((suggestion, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setPrompt(suggestion)}
-                  className="text-xs px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-muted-foreground/80 hover:text-white hover:border-blue-500/50 hover:bg-blue-500/10 transition-all shadow-sm"
-                >
-                  {suggestion}
-                </button>
-              ))}
+            <div className="px-3 py-3 flex items-center justify-between border-t border-border">
+              <div className="flex gap-2">
+                {SUGGESTIONS.map((suggestion, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setPrompt(suggestion)}
+                    className="text-[13px] px-3 py-1.5 rounded-md border border-transparent bg-secondary text-muted-foreground hover:text-foreground hover:bg-neutral-800 transition-colors"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={generateDiagram}
+                disabled={loading || !prompt.trim()}
+                className="flex items-center justify-center px-4 py-1.5 bg-foreground text-background font-medium text-[13px] rounded-md hover:bg-foreground/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {loading ? 'Generating...' : 'Generate'}
+              </button>
             </div>
           </div>
         ) : (
           <div 
-            className="p-2 flex flex-col items-center justify-center min-h-[300px] relative z-10"
+            className="p-1 min-h-[240px] flex flex-col relative"
             onDragEnter={preventDefaults} onDragLeave={preventDefaults} onDragOver={preventDefaults} onDrop={handleDrop}
           >
             {uploadedImage ? (
-              <div className="relative w-full h-[300px] flex items-center justify-center bg-black/40 rounded-[24px] overflow-hidden group/img border border-white/5">
-                <img src={uploadedImage} alt="Uploaded" className="max-h-full max-w-full object-contain shadow-2xl" />
-                <motion.button 
+              <div className="relative w-full h-[240px] flex items-center justify-center bg-secondary rounded-lg overflow-hidden group">
+                <img src={uploadedImage} alt="Uploaded" className="max-h-full max-w-full object-contain" />
+                <button 
                   onClick={() => setUploadedImage(null)}
-                  className="absolute top-4 right-4 p-2.5 bg-black/60 hover:bg-red-500 text-white rounded-full backdrop-blur-md transition-colors opacity-0 group-hover/img:opacity-100 shadow-xl"
+                  className="absolute top-3 right-3 p-1.5 bg-background border border-border text-foreground rounded-md transition-colors opacity-0 group-hover:opacity-100"
                 >
                   <X className="w-4 h-4" />
-                </motion.button>
+                </button>
               </div>
             ) : (
               <div 
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full h-full min-h-[280px] border-2 border-dashed border-white/10 hover:border-blue-500/50 bg-black/20 hover:bg-blue-500/5 rounded-[24px] flex flex-col items-center justify-center cursor-pointer transition-all group/upload"
+                className="w-full h-full min-h-[240px] border border-dashed border-border hover:border-neutral-600 hover:bg-secondary/50 rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors"
               >
-                <div className="w-20 h-20 bg-white/5 rounded-full shadow-[0_0_30px_rgba(255,255,255,0.05)] border border-white/10 flex items-center justify-center mb-6 group-hover/upload:scale-110 group-hover/upload:shadow-[0_0_40px_rgba(59,130,246,0.2)] group-hover/upload:border-blue-500/30 transition-all duration-300">
-                  <UploadCloud className="w-10 h-10 text-muted-foreground/50 group-hover/upload:text-blue-400 transition-colors" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-2">Drag & drop your diagram</h3>
-                <p className="text-muted-foreground/60 text-sm font-medium">Or click to browse (PNG, JPG)</p>
+                <Upload className="w-5 h-5 text-muted-foreground mb-3" />
+                <p className="text-foreground text-[14px] font-medium mb-1">Click or drag image to upload</p>
+                <p className="text-muted-foreground text-[13px]">PNG, JPG up to 10MB</p>
                 <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/png, image/jpeg, image/jpg" className="hidden" />
+              </div>
+            )}
+            
+            {uploadedImage && (
+              <div className="px-3 py-3 flex justify-end border-t border-border mt-1">
+                <button
+                  onClick={generateDiagram}
+                  disabled={loading}
+                  className="flex items-center justify-center px-4 py-1.5 bg-foreground text-background font-medium text-[13px] rounded-md hover:bg-foreground/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {loading ? 'Redesigning...' : 'Redesign Image'}
+                </button>
               </div>
             )}
           </div>
         )}
-
-        {/* Generate Button Wrapper */}
-        <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 z-20">
-          <button
-            onClick={generateDiagram}
-            disabled={loading || (mode === 'text' ? !prompt.trim() : !uploadedImage)}
-            className="group relative flex items-center justify-center px-10 py-4 bg-white text-black font-bold rounded-full shadow-[0_10px_40px_rgba(255,255,255,0.2)] hover:shadow-[0_10px_50px_rgba(255,255,255,0.3)] hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed transition-all overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-animated-gradient opacity-0 group-hover:opacity-100 group-hover:text-white transition-all duration-500" />
-            <div className="relative flex items-center gap-2 group-hover:text-white transition-colors duration-500">
-              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Wand2 className="w-5 h-5" />}
-              <span className="tracking-wide text-sm">{loading ? 'Synthesizing...' : 'Generate Details'}</span>
-              {!loading && <ArrowRight className="w-4 h-4 ml-1 opacity-50 group-hover:opacity-100 transition-opacity" />}
-            </div>
-          </button>
-        </div>
       </motion.div>
 
       {/* Error Message */}
       <AnimatePresence>
         {error && (
           <motion.div 
-            initial={{ opacity: 0, y: 10, height: 0 }} animate={{ opacity: 1, y: 0, height: 'auto' }} exit={{ opacity: 0, y: -10, height: 0 }}
-            className="mt-14 p-4 bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium rounded-xl max-w-2xl w-full text-center shadow-[0_0_20px_rgba(239,68,68,0.1)]"
+            initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+            className="mt-4 p-3 bg-destructive/10 border border-destructive/20 text-destructive-foreground text-[13px] rounded-md"
           >
             {error}
           </motion.div>
@@ -196,11 +175,13 @@ export function HeroInput({
       </AnimatePresence>
       
       {/* Keyboard Hint */}
-      <div className="mt-14 text-xs font-semibold text-muted-foreground/40 flex items-center gap-2 px-4 py-2 rounded-full border border-white/5 bg-black/20">
-        <kbd className="font-sans px-1.5 py-0.5 border border-white/10 rounded bg-white/5 shadow-xs text-muted-foreground">Cmd</kbd>
+      <div className="mt-6 flex items-center justify-center gap-1.5 text-[12px] text-muted-foreground">
+        <HelpCircle className="w-3.5 h-3.5" />
+        <span>Press</span>
+        <kbd className="font-sans px-1.5 py-0.5 border border-border rounded text-[11px] bg-secondary">Cmd</kbd>
         <span>+</span>
-        <kbd className="font-sans px-1.5 py-0.5 border border-white/10 rounded bg-white/5 shadow-xs text-muted-foreground">Enter</kbd>
-        <span className="ml-1 uppercase tracking-widest text-[10px]">to generate</span>
+        <kbd className="font-sans px-1.5 py-0.5 border border-border rounded text-[11px] bg-secondary">Enter</kbd>
+        <span>to generate</span>
       </div>
     </div>
   );

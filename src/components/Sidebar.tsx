@@ -25,7 +25,7 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
     <motion.aside
       initial={{ width: 260 }}
       animate={{ width: collapsed ? 80 : 260 }}
-      className="hidden md:flex flex-col h-screen glass-panel z-10 transition-all duration-300 relative"
+      className="hidden md:flex flex-col h-screen bg-card border-r border-border z-10 transition-all duration-300 relative"
     >
       <div className="flex items-center justify-between p-4 h-16 border-b border-border/40">
         <div className="flex items-center gap-3 overflow-hidden">

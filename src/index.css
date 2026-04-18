@@ -2,7 +2,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
   --color-border: var(--border);
   --color-input: var(--input);
@@ -22,67 +22,61 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
-
-  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  --animate-blob: blob 7s infinite;
 }
 
 :root {
-  /* Deep Dark Mode by default */
-  --background: #060608;
-  --foreground: #ffffff;
+  /* Minimalist Monochromatic Dark Mode */
+  --background: #000000;
+  --foreground: #ededed;
 
-  --card: #0c0c11;
-  --card-foreground: #ffffff;
+  --card: #0a0a0a;
+  --card-foreground: #ededed;
 
   --primary: #ffffff;
-  --primary-foreground: #060608;
+  --primary-foreground: #000000;
 
-  --secondary: #1a1a24;
-  --secondary-foreground: #ffffff;
+  --secondary: #161616;
+  --secondary-foreground: #ededed;
 
-  --muted: #13131a;
-  --muted-foreground: #8a8a9e;
+  --muted: #161616;
+  --muted-foreground: #888888;
 
-  --accent: #1f1f2e;
+  --accent: #262626;
   --accent-foreground: #ffffff;
 
-  --destructive: #9f1239;
-  --destructive-foreground: #ffffff;
+  --destructive: #7f1d1d;
+  --destructive-foreground: #fef2f2;
 
-  --border: #1f1f2e;
-  --input: #1a1a24;
-  --ring: #3b82f6;
+  --border: #222222;
+  --input: #1a1a1a;
+  --ring: #d4d4d8;
 
-  --radius: 1rem;
+  --radius: 0.5rem;
 }
 
-/* Base styles for premium feel */
+/* Base styles for ultra-clean feel */
 * {
   border-color: var(--border);
+  box-sizing: border-box;
 }
+
 body {
   background-color: var(--background);
   color: var(--foreground);
   font-feature-settings: "rlig" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Neo-Glassmorphism utilities */
+/* Strip away old glass variables to flat minimal styles */
 .glass {
-  background: rgba(12, 12, 17, 0.6);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  background: var(--card);
+  border: 1px solid var(--border);
 }
 
 .glass-panel {
-  background: linear-gradient(145deg, rgba(30,30,42,0.6) 0%, rgba(15,15,22,0.8) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-left: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
+  background: var(--card);
+  border: 1px solid var(--border);
 }
 
 /* Custom scrollbar for webkit */
@@ -94,56 +88,15 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
+  background: #333;
   border-radius: 8px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #555;
 }
 
-/* Animated gradient utility */
+/* Tasteful subtle animated accent */
 .bg-animated-gradient {
-  background: linear-gradient(270deg, #3b82f6, #a855f7, #ec4899, #3b82f6);
-  background-size: 300% 300%;
-  animation: gradient-shift 6s ease infinite;
-}
-
-@keyframes gradient-shift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-@keyframes blob {
-  0% { transform: translate(0px, 0px) scale(1); }
-  33% { transform: translate(30px, -50px) scale(1.1); }
-  66% { transform: translate(-20px, 20px) scale(0.9); }
-  100% { transform: translate(0px, 0px) scale(1); }
-}
-
-.animate-blob {
-  animation: blob 7s infinite;
-}
-.animation-delay-2000 {
-  animation-delay: 2s;
-}
-.animation-delay-4000 {
-  animation-delay: 4s;
-}
-
-/* Sleek glow effect */
-.glow-border {
-  position: relative;
-}
-.glow-border::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(to bottom right, rgba(255,255,255,0.2), rgba(255,255,255,0));
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
+  background: #ffffff;
+  color: #000000;
 }

@@ -31,7 +31,7 @@ export function SmartControls({ controls, setControls, isMobilePane = false }: S
   return (
     <div className={cn(
       "flex flex-col gap-6 p-5 h-full overflow-y-auto w-full",
-      !isMobilePane && "glass-panel w-72 hidden lg:flex z-10"
+      !isMobilePane && "bg-card border-l border-border w-72 hidden lg:flex z-10"
     )}>
       <div className="flex items-center gap-2 mb-2">
         <Settings2 className="w-5 h-5 text-muted-foreground" />

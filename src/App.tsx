@@ -251,15 +251,7 @@ export default function App() {
   };
 
   return (
-    <div className="h-screen w-full bg-background text-foreground font-sans flex overflow-hidden selection:bg-primary/20 relative">
-      
-      {/* Animated Mesh Background Layers */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-blue-600/10 blur-[120px] animate-blob" />
-        <div className="absolute top-[20%] -right-[10%] w-[50%] h-[50%] rounded-full bg-purple-600/10 blur-[120px] animate-blob animation-delay-2000" />
-        <div className="absolute -bottom-[20%] left-[20%] w-[60%] h-[60%] rounded-full bg-pink-600/10 blur-[120px] animate-blob animation-delay-4000" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
-      </div>
+    <div className="h-screen w-full bg-background text-foreground font-sans flex overflow-hidden selection:bg-secondary selection:text-foreground">
       
       {/* 1. Left Sidebar Panel */}
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
