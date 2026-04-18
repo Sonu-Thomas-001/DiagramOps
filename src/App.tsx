@@ -15,12 +15,21 @@ export default function App() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [style, setStyle] = useState('minimal');
   const [loading, setLoading] = useState(false);
+  const [isExtracting, setIsExtracting] = useState(false);
+  const [extractedData, setExtractedData] = useState<any>(null);
   const [result, setResult] = useState<{ image_url: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const generateDiagram = async () => {
-    if (mode === 'text' && !prompt.trim()) return;
-    if (mode === 'image' && !uploadedImage) return;
+  const handleAction = async () => {
+    if (mode === 'text') {
+      await generateDiagramFromText();
+    } else {
+      await extractDiagramData();
+    }
+  };
+
+  const generateDiagramFromText = async () => {
+    if (!prompt.trim()) return;
     
     setLoading(true);
     setError(null);
@@ -34,37 +43,7 @@ export default function App() {
         dark: "Dark mode architecture diagram, modern futuristic tech aesthetic. Deep charcoal or dark navy background. Glowing neon accents for arrows and borders. High contrast, sleek glassmorphism elements."
       };
 
-      let architectureDescription = prompt;
-
-      if (mode === 'image' && uploadedImage) {
-        // Step 1: Extract structure using Vision model
-        const base64Data = uploadedImage.split(',')[1];
-        const mimeType = uploadedImage.split(';')[0].split(':')[1];
-        
-        const extractResponse = await ai.models.generateContent({
-          model: 'gemini-3.1-pro-preview',
-          contents: [
-            {
-              inlineData: {
-                data: base64Data,
-                mimeType: mimeType
-              }
-            },
-            "Analyze this diagram image.\n\nExtract:\n1. All text exactly as shown\n2. All components (boxes, services, users, databases)\n3. Relationships (arrows, direction)\n4. Logical flow\n\nReturn STRICT JSON:\n{\n  \"title\": \"\",\n  \"nodes\": [{\"id\": \"\", \"label\": \"\", \"type\": \"\"}],\n  \"edges\": [{\"from\": \"\", \"to\": \"\", \"label\": \"\"}]\n}"
-          ],
-          config: {
-            responseMimeType: "application/json",
-          }
-        });
-
-        if (!extractResponse.text) throw new Error("Failed to extract data from image.");
-        
-        const extractedData = JSON.parse(extractResponse.text);
-        
-        architectureDescription = `Title: ${extractedData.title || 'Architecture Diagram'}\nComponents:\n${extractedData.nodes?.map((n:any) => `- ${n.label} (${n.type || 'component'})`).join('\n')}\n\nFlow/Relationships:\n${extractedData.edges?.map((e:any) => `- ${e.from} -> ${e.to} ${e.label ? `(${e.label})` : ''}`).join('\n')}`;
-      }
-      
-      const finalPrompt = `A high-quality, professional software architecture diagram. All components must be clearly labeled with readable text. Clear directional arrows connecting the components.\n\nArchitecture Description:\n${architectureDescription}\n\nVisual Style:\n${styleModifiers[style as keyof typeof styleModifiers]}`;
+      const finalPrompt = `A high-quality, professional software architecture diagram. All components must be clearly labeled with readable text. Clear directional arrows connecting the components.\n\nArchitecture Description:\n${prompt}\n\nVisual Style:\n${styleModifiers[style as keyof typeof styleModifiers]}`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash-image',
@@ -95,6 +74,98 @@ export default function App() {
       console.error(err);
       const errorMessage = err.message || "";
       setError(errorMessage || "Failed to generate diagram.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const extractDiagramData = async () => {
+    if (!uploadedImage) return;
+    setIsExtracting(true);
+    setError(null);
+    setResult(null);
+    setExtractedData(null);
+    try {
+      const apiKey = (process.env as any).GEMINI_API_KEY;
+      const ai = new GoogleGenAI({ apiKey });
+      
+      const base64Data = uploadedImage.split(',')[1];
+      const mimeType = uploadedImage.split(';')[0].split(':')[1];
+      
+      const extractResponse = await ai.models.generateContent({
+        model: 'gemini-3.1-pro-preview',
+        contents: [
+          {
+            inlineData: {
+              data: base64Data,
+              mimeType: mimeType
+            }
+          },
+          "Analyze this diagram image.\n\nExtract:\n1. All text exactly as shown\n2. All components (boxes, services, users, databases)\n3. Relationships (arrows, direction)\n4. Logical flow\n\nReturn STRICT JSON:\n{\n  \"title\": \"\",\n  \"nodes\": [{\"id\": \"\", \"label\": \"\", \"type\": \"\"}],\n  \"edges\": [{\"from\": \"\", \"to\": \"\", \"label\": \"\"}]\n}"
+        ],
+        config: {
+          responseMimeType: "application/json",
+        }
+      });
+
+      if (!extractResponse.text) throw new Error("Failed to extract data from image.");
+      
+      const data = JSON.parse(extractResponse.text);
+      setExtractedData(data);
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "Failed to extract diagram data.");
+    } finally {
+      setIsExtracting(false);
+    }
+  };
+
+  const generateRedesign = async () => {
+    if (!extractedData) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const apiKey = (process.env as any).GEMINI_API_KEY;
+      const ai = new GoogleGenAI({ apiKey });
+      
+      const styleModifiers = {
+        minimal: "Minimalist flat design, clean vector graphic, monochrome with a single accent color. Lots of whitespace, crisp sans-serif text labels, simple geometric shapes. Pure white background, PPT-ready quality, no clutter.",
+        aws: "AWS architecture diagram style, professional cloud infrastructure graphic. Use standard cloud computing icons, isometric or flat 2D layout. Color palette: AWS orange, dark blue, and gray. Pure white background, enterprise presentation quality.",
+        dark: "Dark mode architecture diagram, modern futuristic tech aesthetic. Deep charcoal or dark navy background. Glowing neon accents for arrows and borders. High contrast, sleek glassmorphism elements."
+      };
+
+      const architectureDescription = `Title: ${extractedData.title || 'Architecture Diagram'}\nComponents:\n${extractedData.nodes?.map((n:any) => `- ${n.label} (${n.type || 'component'})`).join('\n')}\n\nFlow/Relationships:\n${extractedData.edges?.map((e:any) => `- ${e.from} -> ${e.to} ${e.label ? `(${e.label})` : ''}`).join('\n')}`;
+      
+      const finalPrompt = `A high-quality, professional software architecture diagram. All components must be clearly labeled with readable text. Clear directional arrows connecting the components.\n\nArchitecture Description:\n${architectureDescription}\n\nVisual Style:\n${styleModifiers[style as keyof typeof styleModifiers]}`;
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash-image',
+        contents: {
+          parts: [{ text: finalPrompt }]
+        },
+        config: {
+          imageConfig: {
+            aspectRatio: "16:9"
+          }
+        }
+      });
+
+      let base64Image = null;
+      for (const part of response.candidates?.[0]?.content?.parts || []) {
+        if (part.inlineData) {
+          base64Image = part.inlineData.data;
+          break;
+        }
+      }
+
+      if (!base64Image) {
+        throw new Error("No image generated by the model.");
+      }
+
+      setResult({ image_url: `data:image/png;base64,${base64Image}` });
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "Failed to generate diagram.");
     } finally {
       setLoading(false);
     }
@@ -176,19 +247,23 @@ export default function App() {
           setUploadedImage={setUploadedImage}
           style={style}
           setStyle={setStyle}
-          loading={loading}
-          generateDiagram={generateDiagram}
+          loading={loading || isExtracting}
+          generateDiagram={handleAction}
           error={error}
         />
         
-        {mode === 'image' && result && uploadedImage && !loading ? (
+        {mode === 'image' && uploadedImage && (extractedData || result) && !isExtracting ? (
           <ComparisonView 
             originalImage={uploadedImage}
-            redesignedImage={result.image_url}
+            redesignedImage={result?.image_url || null}
+            extractedData={extractedData}
+            setExtractedData={setExtractedData}
+            onGenerate={generateRedesign}
+            isGenerating={loading}
           />
         ) : (
           <DiagramPreview 
-            loading={loading}
+            loading={loading || isExtracting}
             result={result}
             mode={mode}
             uploadedImage={uploadedImage}
@@ -201,8 +276,8 @@ export default function App() {
           downloadJPG={downloadJPG}
           downloadSVG={downloadSVG}
           downloadPPT={downloadPPT}
-          generateDiagram={generateDiagram}
-          loading={loading}
+          generateDiagram={handleAction}
+          loading={loading || isExtracting}
         />
       </main>
 
