@@ -234,29 +234,6 @@ export default function App() {
   };
 
   return (
-<<<<<<< HEAD
-    <div className="h-screen w-full bg-background text-foreground font-sans flex overflow-hidden selection:bg-secondary selection:text-foreground">
-      
-      {/* 1. Left Sidebar Panel */}
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-      
-      {/* 2. Main Workspace Panel */}
-      <main className="flex-1 flex flex-col min-w-0 h-full relative overflow-y-auto overflow-x-hidden custom-scrollbar">
-        {activeTab === 'history' ? (
-          <HistoryPanel 
-            history={history} 
-            onClear={clearHistory}
-            onSelect={(item) => {
-              if (item.type === 'text') {
-                setActiveTab('text');
-                setPrompt(item.prompt || '');
-              } else {
-                setActiveTab('image');
-                if (item.originalImage) setUploadedImage(item.originalImage);
-              }
-              setResult({ image_url: item.resultImage });
-            }}
-=======
     <div className="min-h-screen bg-[#FAFAFA] text-slate-900 font-sans selection:bg-blue-100 flex flex-col">
       <Navbar />
       
@@ -283,7 +260,6 @@ export default function App() {
             setExtractedData={setExtractedData}
             onGenerate={generateRedesign}
             isGenerating={loading}
->>>>>>> 9f673154aac585871c4a3622e6dfa4749e99a512
           />
         ) : (
           <DiagramPreview 
